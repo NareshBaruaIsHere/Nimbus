@@ -8,8 +8,10 @@ void main() {
   testWidgets('App launches and shows the Downloads view', (WidgetTester tester) async {
     final settings = SettingsService();
     final downloads = DownloadService(settings);
+    downloads.init();
 
     await tester.pumpWidget(NimbusApp(settings: settings, downloads: downloads));
+    await tester.pump();
 
     // The sidebar brand and the default Downloads page should be present.
     expect(find.text('Nimbus'), findsWidgets);

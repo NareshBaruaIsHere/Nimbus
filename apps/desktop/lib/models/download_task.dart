@@ -47,12 +47,14 @@ class DownloadTask {
     DateTime? createdAt,
     this.completedAt,
     this.errorMessage,
+    this.downloadPath,
   }) : createdAt = createdAt ?? DateTime.now();
 
   final String id;
   final String name;
   final String url;
   final DownloadCategory category;
+  String? downloadPath;
 
   double totalBytes;
   double downloadedBytes;
@@ -77,6 +79,7 @@ class DownloadTask {
     DownloadStatus? status,
     DateTime? completedAt,
     String? errorMessage,
+    String? downloadPath,
   }) {
     return DownloadTask(
       id: id,
@@ -90,6 +93,7 @@ class DownloadTask {
       createdAt: createdAt,
       completedAt: completedAt ?? this.completedAt,
       errorMessage: errorMessage ?? this.errorMessage,
+      downloadPath: downloadPath ?? this.downloadPath,
     );
   }
 
@@ -105,6 +109,7 @@ class DownloadTask {
         'createdAt': createdAt.toIso8601String(),
         'completedAt': completedAt?.toIso8601String(),
         'errorMessage': errorMessage,
+        'downloadPath': downloadPath,
       };
 
   factory DownloadTask.fromJson(Map<String, dynamic> json) {
@@ -128,6 +133,7 @@ class DownloadTask {
           ? null
           : DateTime.tryParse(json['completedAt'] as String),
       errorMessage: json['errorMessage'] as String?,
+      downloadPath: json['downloadPath'] as String?,
     );
   }
 }

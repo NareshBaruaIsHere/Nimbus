@@ -8,6 +8,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Deserialize)]
 pub struct DownloadRequest {
     pub url: String,
+    pub category: Option<String>,
+    pub dir: Option<String>,
 }
 
 #[derive(Serialize)]

@@ -20,7 +20,8 @@ class DownloadsPage extends StatelessWidget {
       builder: (context, _) {
         final active = service.all.where((t) => t.status == DownloadStatus.active).toList();
         final queued = service.all.where((t) => t.status == DownloadStatus.pending).toList();
-        final total = active.length + queued.length;
+        final paused = service.all.where((t) => t.status == DownloadStatus.paused).toList();
+        final total = active.length + queued.length + paused.length;
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(28, 24, 28, 28),
@@ -31,7 +32,7 @@ class DownloadsPage extends StatelessWidget {
                 title: 'Downloads',
                 subtitle: total == 0
                     ? 'No active downloads'
-                    : '$total in progress · ${active.length} active · ${queued.length} queued',
+                    : '$total item${total > 1 ? 's' : ''} · ${active.length} active · ${queued.length} queued',
               ),
               const SizedBox(height: 20),
               const AddDownloadBar(),
@@ -53,8 +54,17 @@ class DownloadsPage extends StatelessWidget {
                                   child: DownloadTile(task: t),
                                 )),
                           ],
+                          if (paused.isNotEmpty) ...[
+                            if (active.isNotEmpty) const SizedBox(height: 8),
+                            _SectionLabel('Paused', paused.length, theme),
+                            const SizedBox(height: 12),
+                            ...paused.map((t) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: DownloadTile(task: t),
+                                )),
+                          ],
                           if (queued.isNotEmpty) ...[
-                            const SizedBox(height: 8),
+                            if (active.isNotEmpty || paused.isNotEmpty) const SizedBox(height: 8),
                             _SectionLabel('Queued', queued.length, theme),
                             const SizedBox(height: 12),
                             ...queued.map((t) => Padding(

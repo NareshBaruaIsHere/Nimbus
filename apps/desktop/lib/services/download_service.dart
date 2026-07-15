@@ -78,6 +78,9 @@ class DownloadService extends ChangeNotifier {
         task.speedBytesPerSec = 0;
         task.status = DownloadStatus.completed;
         task.completedAt = DateTime.now();
+        final dir = _settings.settings.directoryFor(task.category);
+        final sep = dir.contains('\\') ? '\\' : '/';
+        task.downloadPath = dir.endsWith(sep) ? '$dir${task.name}' : '$dir$sep${task.name}';
         _baseSpeeds.remove(task.id);
         _completedController.add(task);
         if (_settings.settings.notifications) {
@@ -105,8 +108,15 @@ class DownloadService extends ChangeNotifier {
   }
 
   double _estimateSize(DownloadTask task) {
-    final seeds = <int>[350, 720, 1400, 2600, 4800, 9500];
-    final mb = seeds[_random.nextInt(seeds.length)];
+    final seeds = <DownloadCategory, List<int>>{
+      DownloadCategory.music: [4, 6, 8, 10, 15, 20],
+      DownloadCategory.video: [50, 100, 150, 200, 350, 500],
+      DownloadCategory.documents: [2, 5, 8, 12, 20, 35],
+      DownloadCategory.programs: [50, 150, 300, 600, 1200, 2500],
+      DownloadCategory.other: [5, 10, 25, 50, 100, 200],
+    };
+    final pool = seeds[task.category] ?? seeds[DownloadCategory.other]!;
+    final mb = pool[_random.nextInt(pool.length)];
     return mb * 1000 * 1000;
   }
 
@@ -130,12 +140,19 @@ class DownloadService extends ChangeNotifier {
   }
 
   String _deriveName(String url) {
+    final lower = url.toLowerCase();
+    if (lower.contains('youtube.com') || lower.contains('youtu.be') || lower.contains('music.youtube.com')) {
+      if (lower.contains('music.youtube.com') || lower.contains('&list=') || lower.contains('?list=')) {
+        return 'youtube-music-${_newId().substring(0, 6)}.mp3';
+      }
+      return 'youtube-video-${_newId().substring(0, 6)}.mp4';
+    }
     final cleaned = url.split('?').first;
     final segments = cleaned.split('/').where((s) => s.isNotEmpty).toList();
     final last = segments.isNotEmpty ? segments.last : cleaned;
-    if (last.isEmpty || last.contains(':') || last.contains('.')) {
-      // Likely a host or already a filename.
-      if (RegExp(r'\.\w{1,5}$').hasMatch(last)) return last;
+    final hasExt = RegExp(r'\.\w{1,5}$').hasMatch(last);
+    if (last.isEmpty || last.contains(':') || (!hasExt && last.length < 6)) {
+      if (hasExt) return last;
       return 'download-${_newId().substring(0, 6)}';
     }
     return last;
@@ -263,6 +280,11 @@ class DownloadService extends ChangeNotifier {
 
   void _seedSamples() {
     final now = DateTime.now();
+    final sep = _settings.settings.downloadDir.contains('\\') ? '\\' : '/';
+    String joinDir(DownloadCategory cat) {
+      final dir = _settings.settings.directoryFor(cat);
+      return dir.endsWith(sep) ? dir : '$dir$sep';
+    }
     _tasks.addAll([
       DownloadTask(
         id: _newId(),
@@ -290,6 +312,7 @@ class DownloadService extends ChangeNotifier {
         downloadedBytes: 680 * 1000 * 1000,
         status: DownloadStatus.completed,
         completedAt: now.subtract(const Duration(hours: 2)),
+        downloadPath: '${joinDir(DownloadCategory.video)}big-buck-bunny-1080p.mp4',
       ),
       DownloadTask(
         id: _newId(),
@@ -300,6 +323,7 @@ class DownloadService extends ChangeNotifier {
         downloadedBytes: 142 * 1000 * 1000,
         status: DownloadStatus.completed,
         completedAt: now.subtract(const Duration(days: 1)),
+        downloadPath: '${joinDir(DownloadCategory.music)}album-flavors-of-jazz.zip',
       ),
       DownloadTask(
         id: _newId(),

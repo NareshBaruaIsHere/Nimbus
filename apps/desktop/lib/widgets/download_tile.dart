@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../models/download_task.dart';
@@ -148,6 +150,9 @@ class DownloadTile extends StatelessWidget {
       case DownloadStatus.pending:
         buttons.add(_IconAction(icon: Icons.close_rounded, tooltip: 'Remove', onTap: () => service.remove(task.id)));
       case DownloadStatus.completed:
+        if (task.downloadPath != null) {
+          buttons.add(_IconAction(icon: Icons.folder_outlined, tooltip: 'Show in folder', onTap: () => _openFileLocation(task.downloadPath!)));
+        }
         buttons.add(_IconAction(icon: Icons.delete_outline_rounded, tooltip: 'Remove from history', onTap: () => service.remove(task.id)));
       case DownloadStatus.failed:
         buttons.add(_TextAction(label: 'Retry', onTap: () => service.retry(task.id)));
@@ -198,6 +203,21 @@ class _TextAction extends StatelessWidget {
         child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
       ),
     );
+  }
+}
+
+void _openFileLocation(String path) {
+  final file = File(path);
+  final dir = file.parent;
+  if (!dir.existsSync()) {
+    dir.createSync(recursive: true);
+  }
+  if (Platform.isWindows) {
+    Process.start('explorer', [dir.path]);
+  } else if (Platform.isMacOS) {
+    Process.start('open', [dir.path]);
+  } else {
+    Process.start('xdg-open', [dir.path]);
   }
 }
 

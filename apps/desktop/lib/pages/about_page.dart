@@ -82,9 +82,52 @@ class AboutPage extends StatelessWidget {
           ),
           const Spacer(),
           Center(
-            child: Text(
-              '© ${DateTime.now().year} Nimbus. Built with Flutter.',
-              style: theme.textTheme.bodySmall,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '© ${DateTime.now().year} Nimbus. Built with Flutter.',
+                  style: theme.textTheme.bodySmall,
+                ),
+                const SizedBox(height: 6),
+                InkWell(
+                  onTap: () {},
+                  child: Text.rich(
+                    TextSpan(
+                      text: 'Developer: ',
+                      style: theme.textTheme.bodySmall,
+                      children: [
+                        TextSpan(
+                          text: 'IFELSEGHOST',
+                          style: TextStyle(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const TextSpan(text: ' · '),
+                        WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: InkWell(
+                            onTap: () {},
+                            child: Icon(
+                              Icons.link,
+                              size: 13,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' github.com/NareshBaruaIsHere',
+                          style: TextStyle(
+                            color: theme.colorScheme.primary,
+                            fontSize: 11.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
