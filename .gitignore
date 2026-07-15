@@ -1,0 +1,15 @@
+# OS / editor files
+.DS_Store
+Thumbs.db
+*.iml
+.idea/
+.vscode/
+.metadata
+
+# Rust
+target/
+
+# Flutter / Dart
+.dart_tool/
+build/
+**/ephemeral/
