@@ -83,13 +83,13 @@ Nimbus/
 └── shared/               # Shared code (future)
 ```
 
-## 📸 Screenshots
+<!-- ## 📸 Screenshots -->
 
 <!-- Add screenshots here once available -->
 
-| Downloads | History | Settings | About |
+<!-- | Downloads | History | Settings | About |
 |-----------|---------|----------|-------|
-| Active & queued downloads | Completed & failed history | Categories, performance & theme | App info & credits |
+| Active & queued downloads | Completed & failed history | Categories, performance & theme | App info & credits | -->
 
 ## 🛠️ Tech Stack
 
